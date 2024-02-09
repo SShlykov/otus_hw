@@ -3,4 +3,4 @@ linters-settings:
     rules:
       main:
         allow:
-          - github.com/lukesiler/stringutil
+          - golang.org/x/example/hello
