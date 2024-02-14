@@ -33,11 +33,16 @@ func NewStringUnpacker() *StringUnpacker {
 func (su *StringUnpacker) processRune(r rune) error {
 	switch su.state {
 	case Start:
-		su.state = Normal
-		if unicode.IsDigit(r) {
+		switch {
+		case r == '\\':
+			su.state = Escape
+			su.currentRune = r
+		case !unicode.IsLetter(r):
 			return ErrInvalidString
+		default:
+			su.state = Normal
+			su.currentRune = r
 		}
-		su.currentRune = r
 	case Normal:
 		switch {
 		case r == '\\':
