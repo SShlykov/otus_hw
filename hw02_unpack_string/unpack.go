@@ -6,7 +6,18 @@ import (
 
 var ErrInvalidString = errors.New("invalid string")
 
-func Unpack(_ string) (string, error) {
-	// Place your code here.
-	return "", nil
+func Unpack(encodedString string) (string, error) {
+	if encodedString == "" {
+		return "", nil
+	}
+
+	decoder := NewStringUnpacker()
+
+	for _, r := range encodedString {
+		if err := decoder.processRune(r); err != nil {
+			return "", err
+		}
+	}
+
+	return decoder.toString(), nil
 }
