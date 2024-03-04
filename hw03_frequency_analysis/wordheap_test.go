@@ -27,6 +27,28 @@ func TestWordHeap_TopN(t *testing.T) {
 	}
 }
 
+func TestWordHeap_TopN_Overflow(t *testing.T) {
+	h := NewWordHeap()
+	words := []WordFrequency{
+		{"word", 2},
+		{"test", 3},
+		{"another", 1},
+	}
+	for _, wf := range words {
+		h.Add(wf.Word, wf.Frequency)
+	}
+	top10 := h.TopN(10)
+	expected := []string{"test", "word", "another"}
+	for i, word := range top10 {
+		if word != expected[i] {
+			t.Errorf("Expected %s, got %s at position %d", expected[i], word, i)
+		}
+	}
+	if h.Len() != 0 {
+		t.Errorf("Heap size incorrect after TopN, expected 1, got %d", h.Len())
+	}
+}
+
 func TestWordHeap_Order(t *testing.T) {
 	h := NewWordHeap()
 	words := []WordFrequency{
