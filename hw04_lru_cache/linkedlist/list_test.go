@@ -1,4 +1,4 @@
-package hw04lrucache
+package linkedlist
 
 import (
 	"testing"
@@ -6,9 +6,13 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func makeIntList() List[int] {
+	return NewList[int]()
+}
+
 func TestList(t *testing.T) {
 	t.Run("empty list", func(t *testing.T) {
-		l := NewList()
+		l := makeIntList()
 
 		require.Equal(t, 0, l.Len())
 		require.Nil(t, l.Front())
@@ -16,7 +20,7 @@ func TestList(t *testing.T) {
 	})
 
 	t.Run("complex", func(t *testing.T) {
-		l := NewList()
+		l := makeIntList()
 
 		l.PushFront(10) // [10]
 		l.PushBack(20)  // [10, 20]
@@ -44,7 +48,7 @@ func TestList(t *testing.T) {
 
 		elems := make([]int, 0, l.Len())
 		for i := l.Front(); i != nil; i = i.Next {
-			elems = append(elems, i.Value.(int))
+			elems = append(elems, i.Value)
 		}
 		require.Equal(t, []int{70, 80, 60, 40, 10, 30, 50}, elems)
 	})
