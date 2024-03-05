@@ -6,6 +6,8 @@ type List[T any] struct {
 
 	// Head представляет начало списка, предполагается что текущий узел имеет ссылку на предыдущий и следующий узел
 	Head *Node[T]
+	// Tail представляет конец списка, предполагается что текущий узел имеет ссылку на предыдущий и следующий узел
+	Tail *Node[T]
 }
 
 // NewList создает новый список с произвольным значением типа T (что-то похожее на конструктор фабрики)
@@ -25,25 +27,21 @@ func (ll *List[T]) Front() *Node[T] {
 
 // Back возвращает последний узел списка
 func (ll *List[T]) Back() *Node[T] {
-	if ll.Len() == 0 {
-		return nil
-	}
-	last := ll.Head
-	for ; last.Next != nil; last = last.Next {
-	}
-	return last
+	return ll.Tail
 }
 
 // PushFront добавляет элемент в начало списка
 func (ll *List[T]) PushFront(value T) *Node[T] {
+	newNode := &Node[T]{Value: value}
+
 	if ll.Len() == 0 {
-		newNode := NewNode(value)
 		ll.Head = newNode
+		ll.Tail = newNode
 		ll.length++
 		return newNode
 	}
 
-	newNode := NewNode(value).SetNext(ll.Head)
+	newNode.Next = ll.Head
 	ll.Front().Prev = newNode
 
 	ll.Head = newNode
@@ -53,19 +51,20 @@ func (ll *List[T]) PushFront(value T) *Node[T] {
 
 // PushBack добавляет элемент в конец списка
 func (ll *List[T]) PushBack(value T) *Node[T] {
-	newNode := NewNode(value)
+	newNode := &Node[T]{Value: value}
 
 	if ll.Len() == 0 {
 		ll.Head = newNode
+		ll.Tail = newNode
 		ll.length++
 		return newNode
 	}
 
-	back := ll.Back()
-	newNode.SetPrev(back)
-	back.Next = newNode
-	ll.length++
+	newNode.Prev = ll.Tail
+	ll.Back().Next = newNode
 
+	ll.Tail = newNode
+	ll.length++
 	return newNode
 }
 

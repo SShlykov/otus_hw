@@ -56,13 +56,24 @@ func TestCache(t *testing.T) {
 		c.Set("b", 2)
 		c.Set("c", 3)
 
-		c.Get("a")
+		c.Get("c")
 		c.Get("b")
-
+		// а - оказалось в конце очереди, его вытесняют
 		c.Set("d", 4)
 
-		_, ok := c.Get("c")
-		require.False(t, ok)
+		// d - вытеснил наименее используемый а (теперь его нет в кэше)
+		_, aExist := c.Get("a") // nil, false
+		require.False(t, aExist)
+
+		// d - есть в очереди
+		_, dExist := c.Get("d") // 4, true
+		require.True(t, dExist)
+
+		c.Set("d", 5)
+		// d - обновлено значение
+		newD, dExist := c.Get("d") // 5, true
+		require.True(t, dExist)
+		require.Equal(t, newD, 5)
 	})
 }
 
