@@ -50,13 +50,34 @@ func TestCache(t *testing.T) {
 	})
 
 	t.Run("purge logic", func(t *testing.T) {
-		// Write me
+		c := NewCache(3)
+
+		c.Set("a", 1)
+		c.Set("b", 2)
+		c.Set("c", 3)
+
+		c.Get("c")
+		c.Get("b")
+		// а - оказалось в конце очереди, его вытесняют
+		c.Set("d", 4)
+
+		// d - вытеснил наименее используемый а (теперь его нет в кэше)
+		_, aExist := c.Get("a") // nil, false
+		require.False(t, aExist)
+
+		// d - есть в очереди
+		_, dExist := c.Get("d") // 4, true
+		require.True(t, dExist)
+
+		c.Set("d", 5)
+		// d - обновлено значение
+		newD, dExist := c.Get("d") // 5, true
+		require.True(t, dExist)
+		require.Equal(t, newD, 5)
 	})
 }
 
 func TestCacheMultithreading(t *testing.T) {
-	t.Skip() // Remove me if task with asterisk completed.
-
 	c := NewCache(10)
 	wg := &sync.WaitGroup{}
 	wg.Add(2)
