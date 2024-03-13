@@ -2,13 +2,11 @@ package worker
 
 import (
 	"context"
-	"sync"
 )
 
 type Task func() error
 
-func Start(ctx context.Context, wg *sync.WaitGroup, taskChan <-chan Task, doneChan chan<- struct{}, errChan chan<- error) {
-	defer wg.Done()
+func Start(ctx context.Context, taskChan <-chan Task, doneChan chan<- struct{}, errChan chan<- error) {
 	for {
 		select {
 		case <-ctx.Done():

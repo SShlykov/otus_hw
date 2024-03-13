@@ -13,6 +13,14 @@ import (
 	"go.uber.org/goleak"
 )
 
+func TestRun_WorkersLessThanZero(t *testing.T) {
+	defer goleak.VerifyNone(t)
+
+	err := Run(nil, -1, 1)
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "workerCount must be greater than 0")
+}
+
 func TestRun(t *testing.T) {
 	defer goleak.VerifyNone(t)
 

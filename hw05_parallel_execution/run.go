@@ -1,23 +1,42 @@
 package hw05parallelexecution
 
 import (
+	"errors"
 	"github.com/SShlykov/otus_hw/hw05_parallel_execution/internal/worker"
 	"sync"
 )
 
 // Run starts tasks in workerCount goroutines and stops its work when receiving errorLimit errors from tasks.
 func Run(tasks []worker.Task, workerCount, errorLimit int) error {
+	if workerCount < 0 {
+		return errors.New("workerCount must be greater than 0")
+	}
 	context := worker.NewWorkerContext()
 	wg := &sync.WaitGroup{}
 
-	errChan := make(chan error, errorLimit)
-	doneChan := make(chan struct{}, len(tasks))
-	taskChan := initTaskChan(tasks)
+	errChan := make(chan error, workerCount)
+	doneChan := make(chan struct{}, workerCount)
+	taskChan := make(chan worker.Task)
 
 	for i := 0; i < workerCount; i++ {
 		wg.Add(1)
-		go worker.Start(context.Ctx, wg, taskChan, doneChan, errChan)
+		go func() {
+			defer wg.Done()
+			worker.Start(context.Ctx, taskChan, doneChan, errChan)
+		}()
 	}
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for _, task := range tasks {
+			select {
+			case taskChan <- task:
+			case <-context.Ctx.Done():
+				return
+			}
+		}
+	}()
 
 	context.ErrGroup.Go(func() error { return worker.ErrorHandler(context, errChan, errorLimit) })
 
@@ -27,14 +46,4 @@ func Run(tasks []worker.Task, workerCount, errorLimit int) error {
 	wg.Wait()
 
 	return err
-}
-
-func initTaskChan(tasks []worker.Task) <-chan worker.Task {
-	taskChan := make(chan worker.Task, len(tasks))
-	for _, task := range tasks {
-		taskChan <- task
-	}
-	close(taskChan)
-
-	return taskChan
 }
