@@ -2,8 +2,8 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	copyPkg "github.com/SShlykov/otus_hw/hw07_file_copying/internal/copy"
-	loggerPkg "github.com/SShlykov/otus_hw/hw07_file_copying/pkg/logger"
 )
 
 var (
@@ -19,11 +19,10 @@ func init() {
 }
 
 func main() {
-	logger := loggerPkg.SetupLogger("debug")
 	flag.Parse()
 	err := copyPkg.Copy(from, to, offset, limit)
 
 	if err != nil {
-		logger.Error("Error while copying file", loggerPkg.Err(err))
+		fmt.Println("Error: ", err.Error())
 	}
 }
