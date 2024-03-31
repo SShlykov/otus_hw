@@ -2,7 +2,6 @@ package copy
 
 import (
 	"errors"
-	"fmt"
 	"github.com/SShlykov/otus_hw/hw07_file_copying/internal/progress"
 	"io"
 	"math"
@@ -63,8 +62,7 @@ func doCopy(source *os.File, target *os.File, offset, bytesToCopy int64) error {
 	if _, err := source.Seek(offset, 0); err != nil {
 		return err
 	}
-	fmt.Println("Copying...", bytesToCopy)
-	fmt.Println("Buffer size...", bufferSize)
+
 	for current < bytesToCopy {
 		if _, err := source.Read(buf); err != nil && err != io.EOF {
 			return err
@@ -73,14 +71,10 @@ func doCopy(source *os.File, target *os.File, offset, bytesToCopy int64) error {
 		remained := min(bytesToCopy-current, bufferSize)
 		str := buf[:remained]
 
-		target.Write(str)
+		if _, err := target.Write(str); err != nil {
+			return err
+		}
 		current += remained
-		fmt.Printf(
-			"\nCopied %d bytes; total: %d; string: %q\n",
-			current,
-			bytesToCopy,
-			str,
-		)
 		bar.Add(remained)
 	}
 
