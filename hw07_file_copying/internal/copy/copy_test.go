@@ -8,7 +8,7 @@ import (
 
 func TestCopy(t *testing.T) {
 	const inputFile = "test_input/input.txt"
-	const outputFile = "tmp/output.txt"
+	const outputFile = "test_input/output.txt"
 
 	tests := []struct {
 		name    string
