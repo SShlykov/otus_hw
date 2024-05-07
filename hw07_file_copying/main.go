@@ -2,6 +2,8 @@ package main
 
 import (
 	"flag"
+	"fmt"
+	copyPkg "github.com/SShlykov/otus_hw/hw07_file_copying/internal/copy"
 )
 
 var (
@@ -18,5 +20,9 @@ func init() {
 
 func main() {
 	flag.Parse()
-	// Place your code here.
+	err := copyPkg.Copy(from, to, offset, limit)
+
+	if err != nil {
+		fmt.Println("Error: ", err.Error())
+	}
 }
