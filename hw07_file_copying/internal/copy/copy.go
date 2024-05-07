@@ -111,17 +111,10 @@ func validateParams(fromPath, toPath string, offset, limit int64) error {
 	if toPath == "" {
 		return ErrorToPathEmpty
 	}
-	realFromPath, err := filepath.EvalSymlinks(fromPath)
-	if err != nil {
-		return err
-	}
+	cleanFromPath := filepath.Clean(fromPath)
+	cleanToPath := filepath.Clean(toPath)
 
-	realToPath, err := filepath.EvalSymlinks(toPath)
-	if err != nil {
-		return err
-	}
-
-	if realFromPath == realToPath {
+	if cleanFromPath == cleanToPath {
 		return ErrorSamePaths
 	}
 	if offset < 0 || limit < 0 {
