@@ -12,15 +12,18 @@ func TestCopy(t *testing.T) {
 
 	tests := []struct {
 		name    string
+		input   string
+		output  string
 		offset  int64
 		limit   int64
 		wantErr bool
 		err     error
 	}{
-		{"Copy without offset and limit", 0, 0, false, nil},
-		{"Copy with offset", 100, 0, false, nil},
-		{"Copy with limit", 0, 100, false, nil},
-		{"Copy with offset and limit", 100, 100, false, nil},
+		{"Copy without offset and limit", inputFile, outputFile, 0, 0, false, nil},
+		{"Copy with offset", inputFile, outputFile, 100, 0, false, nil},
+		{"Copy with limit", inputFile, outputFile, 0, 100, false, nil},
+		{"Copy with offset and limit", inputFile, outputFile, 100, 100, false, nil},
+		{"With Error", inputFile, inputFile, 100, 100, false, ErrorSamePaths},
 	}
 
 	for _, tt := range tests {

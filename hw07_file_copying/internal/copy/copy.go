@@ -6,6 +6,7 @@ import (
 	"io"
 	"math"
 	"os"
+	"path/filepath"
 )
 
 var (
@@ -96,18 +97,35 @@ func min(a, b int64) int64 {
 	return b
 }
 
+var (
+	ErrorFromPathEmpty = errors.New("from path is empty")
+	ErrorToPathEmpty   = errors.New("to path is empty")
+	ErrorSamePaths     = errors.New("from and to paths are the same")
+	ErrorNegativeValue = errors.New("offset and limit should be positive")
+)
+
 func validateParams(fromPath, toPath string, offset, limit int64) error {
 	if fromPath == "" {
-		return errors.New("from path is empty")
+		return ErrorFromPathEmpty
 	}
 	if toPath == "" {
-		return errors.New("to path is empty")
+		return ErrorToPathEmpty
 	}
-	if fromPath == toPath {
-		return errors.New("from and to paths are the same")
+	realFromPath, err := filepath.EvalSymlinks(fromPath)
+	if err != nil {
+		return err
+	}
+
+	realToPath, err := filepath.EvalSymlinks(toPath)
+	if err != nil {
+		return err
+	}
+
+	if realFromPath == realToPath {
+		return ErrorSamePaths
 	}
 	if offset < 0 || limit < 0 {
-		return errors.New("offset and limit should be positive")
+		return ErrorNegativeValue
 	}
 
 	return nil
