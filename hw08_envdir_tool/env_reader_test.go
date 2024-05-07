@@ -10,7 +10,7 @@ func TestReadDir(t *testing.T) {
 	path := "testdata/env"
 
 	fileNames, err := ReadDir(path)
-	fmt.Printf("%+v\n", fileNames)
+	fmt.Printf("%#v\n", fileNames)
 
 	assert.Empty(t, err)
 }

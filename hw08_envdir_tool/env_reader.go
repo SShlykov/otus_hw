@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"os"
+	"strings"
 )
 
 type Environment map[string]EnvValue
@@ -28,6 +29,7 @@ func ReadDir(dir string) (Environment, error) {
 		if err != nil {
 			return nil, err
 		}
+		value = strings.ReplaceAll(value, "\x00", "\n")
 
 		environmets[file.Name()] = EnvValue{Value: value, NeedRemove: needRemove}
 	}
